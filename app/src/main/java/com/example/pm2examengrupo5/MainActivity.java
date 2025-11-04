@@ -65,6 +65,14 @@ public class MainActivity extends AppCompatActivity {
         salvarContacto = (Button) findViewById(R.id.btnSalvar);
         listarContactos = (Button) findViewById(R.id.btnListar);
 
+        listarContactos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, ListarContactosActivity.class);
+                startActivity(intent);
+            }
+        });
+
         salvarContacto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
