@@ -13,6 +13,8 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import retrofit2.Call;
+
 public class EditarPersonaActivity extends AppCompatActivity {
 
     TextView tvId;
@@ -20,7 +22,7 @@ public class EditarPersonaActivity extends AppCompatActivity {
     Button btnGuardar, btnCancelar;
 
     int id;
-    String urlActualizar = "http://192.168.1.34/Examen2P-php/UpdatePerson.php";
+    ApiService api;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +36,8 @@ public class EditarPersonaActivity extends AppCompatActivity {
         btnGuardar = findViewById(R.id.btnGuardarCambios);
         btnCancelar = findViewById(R.id.btnCancelar);
 
-        // Recuperar datos enviados desde ListarContactosActivity
+        api = RetrofitClient.getClient().create(ApiService.class);
+
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             id = extras.getInt("id");
@@ -60,40 +63,29 @@ public class EditarPersonaActivity extends AppCompatActivity {
                 return;
             }
 
-            actualizarPersona(id, nuevosNombres, nuevaLatitud, nuevaLongitud);
+            Personas persona = new Personas();
+            persona.setId(id);
+            persona.setNombres(nuevosNombres);
+            persona.setLatitud(Double.parseDouble(nuevaLatitud));
+            persona.setLongitud(Double.parseDouble(nuevaLongitud));
+
+            Call<Void> call = api.updatePerson(persona);
+            call.enqueue(new retrofit2.Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, retrofit2.Response<Void> response) {
+                    if(response.isSuccessful()) {
+                        Toast.makeText(EditarPersonaActivity.this, "Contacto actualizado", Toast.LENGTH_SHORT).show();
+                        finish();
+                    } else {
+                        Toast.makeText(EditarPersonaActivity.this, "Error al actualizar", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+                    Toast.makeText(EditarPersonaActivity.this, "Error de conexión", Toast.LENGTH_SHORT).show();
+                }
+            });
         });
     }
-
-    private void actualizarPersona(int id, String nombres, String latitud, String longitud) {
-        RequestQueue queue = Volley.newRequestQueue(this);
-        String url = "http://192.168.1.34/Examen2P-php/UpdatePerson.php";
-
-        String jsonBody = "{"
-                + "\"id\":" + id + ","
-                + "\"nombres\":\"" + nombres + "\","
-                + "\"latitud\":\"" + latitud + "\","
-                + "\"longitud\":\"" + longitud + "\""
-                + "}";
-
-        StringRequest request = new StringRequest(Request.Method.POST, url,
-                response -> {
-                    Toast.makeText(this, "Contacto actualizado", Toast.LENGTH_SHORT).show();
-                    // cerrar actividad o refrescar pantalla
-                },
-                error -> {
-                    Toast.makeText(this, "Error al actualizar", Toast.LENGTH_SHORT).show();
-                }) {
-            @Override
-            public byte[] getBody() {
-                return jsonBody.getBytes();
-            }
-
-            @Override
-            public String getBodyContentType() {
-                return "application/json; charset=utf-8";
-            }
-        };
-        queue.add(request);
-    }
-
 }

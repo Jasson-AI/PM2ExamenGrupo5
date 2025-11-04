@@ -20,7 +20,10 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import retrofit2.Call;
 
 public class ListarContactosActivity extends AppCompatActivity {
     ListView listaContactos;
@@ -29,9 +32,8 @@ public class ListarContactosActivity extends AppCompatActivity {
     ArrayList<String> listaInformacion;
     ArrayList<Personas> listaPersonas;
     ArrayAdapter<String> adapter;
-
-    // Para recordar el contacto seleccionado
     int posicionSeleccionada = -1;
+    ApiService api;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +45,8 @@ public class ListarContactosActivity extends AppCompatActivity {
         btnAtras = findViewById(R.id.btnatras2);
         btnEliminar = findViewById(R.id.btnEliminar);
         btnActualizar = findViewById(R.id.btnActualizar);
+
+        api = RetrofitClient.getClient().create(ApiService.class);
 
         btnAtras.setOnClickListener(v -> finish());
 
@@ -71,13 +75,32 @@ public class ListarContactosActivity extends AppCompatActivity {
             posicionSeleccionada = position;
             Personas personaSeleccionada = listaPersonas.get(position);
             Toast.makeText(this, "Seleccionado para operaciones: " + personaSeleccionada.getNombres(), Toast.LENGTH_SHORT).show();
-            return true; // importante, consume el evento para no lanzar onItemClick simultaneamente
+            return true;
         });
 
         btnEliminar.setOnClickListener(v -> {
             if (posicionSeleccionada != -1) {
                 Personas persona = listaPersonas.get(posicionSeleccionada);
-                eliminarContacto(persona.getId());
+                Map<String, Integer> idMap = new HashMap<>();
+                idMap.put("id", persona.getId());
+
+                Call<Void> call = api.deletePerson(idMap);
+                call.enqueue(new retrofit2.Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, retrofit2.Response<Void> response) {
+                        if (response.isSuccessful()) {
+                            Toast.makeText(ListarContactosActivity.this, "Contacto eliminado", Toast.LENGTH_SHORT).show();
+                            obtenerPersonasDeAPI();
+                        } else {
+                            Toast.makeText(ListarContactosActivity.this, "Error al eliminar", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        Toast.makeText(ListarContactosActivity.this, "Error de conexión", Toast.LENGTH_SHORT).show();
+                    }
+                });
             } else {
                 Toast.makeText(this, "Seleccione un contacto para eliminar", Toast.LENGTH_SHORT).show();
             }
@@ -86,7 +109,6 @@ public class ListarContactosActivity extends AppCompatActivity {
         btnActualizar.setOnClickListener(v -> {
             if (posicionSeleccionada != -1) {
                 Personas persona = listaPersonas.get(posicionSeleccionada);
-                // Abre la actividad para editar, pasando datos por extras
                 Intent intent = new Intent(this, EditarPersonaActivity.class);
                 intent.putExtra("id", persona.getId());
                 intent.putExtra("nombres", persona.getNombres());
@@ -114,36 +136,23 @@ public class ListarContactosActivity extends AppCompatActivity {
     }
 
     private void obtenerPersonasDeAPI() {
-        listaPersonas = new ArrayList<>();
-        listaInformacion = new ArrayList<>();
+        Call<List<Personas>> call = api.getPersons();
+        call.enqueue(new retrofit2.Callback<List<Personas>>() {
+            @Override
+            public void onResponse(Call<List<Personas>> call, retrofit2.Response<List<Personas>> response) {
+                if(response.isSuccessful() && response.body() != null) {
+                    listaPersonas = new ArrayList<>(response.body());
+                    llenarLista();
+                } else {
+                    Toast.makeText(ListarContactosActivity.this, "Error al cargar datos", Toast.LENGTH_SHORT).show();
+                }
+            }
 
-        RequestQueue queue = Volley.newRequestQueue(this);
-        String url = "http://192.168.1.34/Examen2P-php/GetPersons.php";
-
-        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, url, null,
-                response -> {
-                    try {
-                        for (int i = 0; i < response.length(); i++) {
-                            JSONObject obj = response.getJSONObject(i);
-                            Personas persona = new Personas();
-                            persona.setId(obj.getInt("id"));
-                            persona.setNombres(obj.getString("nombres"));
-                            persona.setLatitud(obj.getDouble("latitud"));
-                            persona.setLongitud(obj.getDouble("longitud"));
-                            listaPersonas.add(persona);
-                        }
-                        llenarLista();
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        Toast.makeText(this, "Error al parsear JSON", Toast.LENGTH_SHORT).show();
-                    }
-                }, error -> {
-            error.printStackTrace();
-            Toast.makeText(this, "Error al cargar datos", Toast.LENGTH_SHORT).show();
+            @Override
+            public void onFailure(Call<List<Personas>> call, Throwable t) {
+                Toast.makeText(ListarContactosActivity.this, "Error de conexión", Toast.LENGTH_SHORT).show();
+            }
         });
-
-        queue.add(request);
     }
 
     private void llenarLista() {
@@ -156,7 +165,7 @@ public class ListarContactosActivity extends AppCompatActivity {
                 android.R.layout.simple_list_item_1, listaInformacion);
         listaContactos.setAdapter(adapter);
 
-        posicionSeleccionada = -1;  // Reiniciamos selección
+        posicionSeleccionada = -1;
     }
 
     private void filtrarDatos(String texto) {
@@ -175,27 +184,4 @@ public class ListarContactosActivity extends AppCompatActivity {
                 android.R.layout.simple_list_item_1, listaFiltrada);
         listaContactos.setAdapter(adapter);
     }
-
-    private void eliminarContacto(int id) {
-        RequestQueue queue = Volley.newRequestQueue(this);
-        String url = "http://192.168.1.34/Examen2P-php/DeletePerson.php";
-
-        StringRequest request = new StringRequest(Request.Method.POST, url,
-                response -> {
-                    Toast.makeText(this, "Contacto eliminado", Toast.LENGTH_SHORT).show();
-                    obtenerPersonasDeAPI();
-                },
-                error -> {
-                    Toast.makeText(this, "Error al eliminar", Toast.LENGTH_SHORT).show();
-                }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String,String> params = new HashMap<>();
-                params.put("id", String.valueOf(id));
-                return params;
-            }
-        };
-        queue.add(request);
-    }
-
 }
