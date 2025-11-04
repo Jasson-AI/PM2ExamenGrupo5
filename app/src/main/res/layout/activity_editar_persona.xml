@@ -17,36 +17,50 @@
         android:id="@+id/etNombres"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
         android:hint="Nombres"
-        app:layout_constraintTop_toBottomOf="@id/tvId"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/tvId" />
+
+    <EditText
+        android:id="@+id/etTelefono"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:hint="Teléfono"
+        android:inputType="phone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/etNombres" />
 
     <EditText
         android:id="@+id/etLatitud"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
         android:hint="Latitud"
         android:inputType="numberDecimal|numberSigned"
-        app:layout_constraintTop_toBottomOf="@id/etNombres"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/etTelefono" />
 
     <EditText
         android:id="@+id/etLongitud"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
         android:hint="Longitud"
         android:inputType="numberDecimal|numberSigned"
-        app:layout_constraintTop_toBottomOf="@id/etLatitud"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/etLatitud" />
 
     <Button
         android:id="@+id/btnGuardarCambios"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="25dp"
         android:backgroundTint="#4CAF50"
         android:text="Guardar Cambios"
         app:layout_constraintEnd_toEndOf="parent"
