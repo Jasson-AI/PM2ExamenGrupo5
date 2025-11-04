@@ -42,6 +42,7 @@
         android:usesCleartextTraffic="true">
 
         <activity android:name=".ListarContactosActivity" />
+        <activity android:name=".EditarPersonaActivity" />
         <activity
             android:name=".MainActivity"
             android:exported="true">
