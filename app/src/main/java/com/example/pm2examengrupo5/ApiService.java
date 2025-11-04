@@ -13,9 +13,9 @@ public interface ApiService {
     @GET("GetPersons.php")
     Call<List<Personas>> getPersons();
 
-    @HTTP(method = "DELETE", path = "DeletePersons.php", hasBody = true)
+    @HTTP(method = "DELETE", path = "DeletePerson.php", hasBody = true)
     Call<Void> deletePerson(@Body Map<String, Integer> idMap);
 
-    @PUT("UpdatePersons.php")
+    @PUT("UpdatePerson.php")
     Call<Void> updatePerson(@Body Personas persona);
 }
