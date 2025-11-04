@@ -41,6 +41,7 @@ public class ListarContactosActivity extends AppCompatActivity {
 
         btnAtras.setOnClickListener(v -> finish());
 
+        // Carga inicial
         obtenerPersonasDeAPI();
 
         listaContactos.setOnItemClickListener((parent, view, position, id) -> {
@@ -103,6 +104,7 @@ public class ListarContactosActivity extends AppCompatActivity {
                 Intent intent = new Intent(this, EditarPersonaActivity.class);
                 intent.putExtra("id", persona.getId());
                 intent.putExtra("nombres", persona.getNombres());
+                intent.putExtra("telefono", persona.getTelefono());
                 intent.putExtra("latitud", persona.getLatitud());
                 intent.putExtra("longitud", persona.getLongitud());
                 startActivity(intent);
@@ -124,6 +126,12 @@ public class ListarContactosActivity extends AppCompatActivity {
                 return false;
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        obtenerPersonasDeAPI();  // Recarga lista cada vez que regresa a esta actividad
     }
 
     private void obtenerPersonasDeAPI() {
@@ -149,11 +157,10 @@ public class ListarContactosActivity extends AppCompatActivity {
     private void llenarLista() {
         listaInformacion = new ArrayList<>();
         for (Personas p : listaPersonas) {
-            listaInformacion.add(p.getId() + " | " + p.getNombres()
+            listaInformacion.add(p.getId() + " | " + p.getNombres() + "\nTel: "+ p.getTelefono()
                     + "\nLatitud: " + p.getLatitud() + " | Longitud: " + p.getLongitud());
         }
-        adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_1, listaInformacion);
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listaInformacion);
         listaContactos.setAdapter(adapter);
 
         posicionSeleccionada = -1;
@@ -167,12 +174,12 @@ public class ListarContactosActivity extends AppCompatActivity {
         ArrayList<String> listaFiltrada = new ArrayList<>();
         for (Personas p : listaPersonas) {
             if (p.getNombres().toLowerCase().contains(texto.toLowerCase())) {
-                listaFiltrada.add(p.getId() + " | " + p.getNombres()
+                listaFiltrada.add(p.getId() + " | " + p.getNombres() + "\nTel: "+ p.getTelefono()
                         + "\nLatitud: " + p.getLatitud() + " | Longitud: " + p.getLongitud());
             }
         }
-        adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_1, listaFiltrada);
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listaFiltrada);
         listaContactos.setAdapter(adapter);
     }
 }
+

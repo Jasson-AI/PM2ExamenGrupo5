@@ -76,6 +76,7 @@ public class EditarPersonaActivity extends AppCompatActivity {
                 public void onResponse(Call<Void> call, retrofit2.Response<Void> response) {
                     if(response.isSuccessful()) {
                         Toast.makeText(EditarPersonaActivity.this, "Contacto actualizado", Toast.LENGTH_SHORT).show();
+
                         finish();
                     } else {
                         Toast.makeText(EditarPersonaActivity.this, "Error al actualizar", Toast.LENGTH_SHORT).show();
