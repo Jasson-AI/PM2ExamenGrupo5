@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">PM2ExamenGrupo5</string>
+    <string name="nombres">nombres</string>
+    <string name="salvar_contacto">Salvar Contacto</string>
+    <string name="edad">edad</string>
+    <string name="latitud">latitud</string>
+    <string name="longitud">longitud</string>
+</resources>
