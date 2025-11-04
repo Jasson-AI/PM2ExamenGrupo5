@@ -40,7 +40,7 @@ public class ListarContactosActivity extends AppCompatActivity {
         listaInformacion = new ArrayList<>();
 
         RequestQueue queue = Volley.newRequestQueue(this);
-        String url = "http://192.168.1.34/examen/listarPersonas.php"; // Cambia URL según sea necesario
+        String url = "http://192.168.1.34/Examen2P-php/GetPersons.php"; // Cambia URL según sea necesario
 
         JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, url, null,
                 response -> {
