@@ -5,4 +5,5 @@
     <string name="edad">edad</string>
     <string name="latitud">latitud</string>
     <string name="longitud">longitud</string>
+    <item name="telefono" type="id">telefono</item>
 </resources>
