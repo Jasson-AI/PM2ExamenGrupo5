@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
                                 + "\"firma\":\"" + firmaParaEnviar + "\""
                                 + "}";
 
-                        URL url = new URL("http://192.168.1.34/Examen2P-php/PostPersons.php");
+                        URL url = new URL("http://192.168.1.39/Examen2P-php/PostPersons.php");
                         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                         conn.setRequestMethod("POST");
                         conn.setDoOutput(true);
@@ -204,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
             fotoFile = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES),
                     "foto_" + System.currentTimeMillis() + ".jpg");
             Uri fotoUri = FileProvider.getUriForFile(this,
-                    "com.example.uthp3mv1.provider", fotoFile);
+                    "com.example.PM2ExamenGrupo5.provider", fotoFile);
 
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, fotoUri);

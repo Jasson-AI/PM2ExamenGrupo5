@@ -182,4 +182,3 @@ public class ListarContactosActivity extends AppCompatActivity {
         listaContactos.setAdapter(adapter);
     }
 }
-
